@@ -10,7 +10,17 @@
   <body>
     <div id="game">
       <div id="playground">
-        <div id="layer1"></div>
+        <div id="layer1">
+          <svg id="customers" viewBox="0 0 1081 271" width="1080" height="450" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <pattern id="grid" width="45" height="45" patternUnits="userSpaceOnUse">
+                <path d="M 45 0 L 0 0 0 45" fill="none" stroke="gray" stroke-width="0.5"></path>
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#grid)"></rect>
+            <g id="circles"></g>
+          </svg>
+        </div>
         <div id="background"></div>
       </div>
     </div>

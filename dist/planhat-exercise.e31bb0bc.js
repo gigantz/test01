@@ -19281,13 +19281,19 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
+var _lodash = _interopRequireDefault(require("lodash"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var SIZE = 1;
+var SIZE = 3,
+    RENEWAL_DAYS = 360,
+    SINCE_CONTACTED = 90;
 
 var setColor = function setColor(value) {
   var opacity = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
@@ -19316,12 +19322,44 @@ function () {
     this.health = health || 0;
     this.daysToRenewal = daysToRenewal || 0;
     this.daysLastContacted = daysLastContacted || 0;
+    this.element = null;
   }
 
   _createClass(Customer, [{
+    key: "tick",
+    value: function tick() {
+      if (this.daysToRenewal >= RENEWAL_DAYS / 10) {
+        this.daysToRenewal = 0;
+      } else if (this.daysLastContacted >= SINCE_CONTACTED / 10) {
+        this.daysLastContacted = 0;
+      } else {
+        this.daysToRenewal += 0.01;
+        this.daysLastContacted += 0.0075;
+      }
+
+      this.element.style.transform = "translate(".concat(this.daysToRenewal * SIZE * 10, "px, ").concat(this.daysLastContacted * SIZE * 10, "px)");
+    }
+  }, {
     key: "render",
-    value: function render() {
-      return "\n        <circle\n          cx=\"".concat(this.daysToRenewal * SIZE, "\" \n          cy=\"").concat(this.daysLastContacted * SIZE, "\"\n          r=\"").concat(this.paying * SIZE, "\" \n          style=\"fill:").concat(setColor(this.health, 0.8), ";stroke:").concat(setColor(this.health), ";\"\n        />\n    ");
+    value: function render(idx) {
+      this.element = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      this.element.setAttributeNS(null, "data-customer", idx);
+      this.element.setAttributeNS(null, "r", this.paying * SIZE);
+      this.element.style.fill = setColor(this.health, 0.8);
+      this.element.style.stroke = setColor(this.health);
+      this.element.style.willChange = "transform";
+      this.element.style.transform = "translate(".concat(this.daysToRenewal * SIZE * 10, "px, ").concat(this.daysLastContacted * SIZE * 10, "px)");
+      return this.element;
+    }
+  }, {
+    key: "getData",
+    value: function getData() {
+      return {
+        paying: this.paying,
+        health: this.health,
+        daysToRenewal: _lodash.default.floor(this.daysToRenewal, 2),
+        daysLastContacted: _lodash.default.floor(this.daysLastContacted, 2)
+      };
     }
   }]);
 
@@ -19330,7 +19368,7 @@ function () {
 
 var _default = Customer;
 exports.default = _default;
-},{}],"index.js":[function(require,module,exports) {
+},{"lodash":"node_modules/lodash/lodash.js"}],"index.js":[function(require,module,exports) {
 "use strict";
 
 var _lodash = _interopRequireDefault(require("lodash"));
@@ -19339,14 +19377,16 @@ var _Customer = _interopRequireDefault(require("./Customer"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var circles = document.getElementById("circles");
+var customers = document.getElementById("customers");
 var randomCustomers = Array(10).fill(null).map(function (i) {
   var paying = _lodash.default.random(5, 20);
 
   var health = _lodash.default.floor(_lodash.default.random(0, 10, true), 2);
 
-  var daysToRenewal = _lodash.default.random(0, 360);
+  var daysToRenewal = _lodash.default.random(0, 36);
 
-  var daysLastContacted = _lodash.default.random(0, 90);
+  var daysLastContacted = _lodash.default.random(0, 9);
 
   return new _Customer.default({
     paying: paying,
@@ -19355,17 +19395,26 @@ var randomCustomers = Array(10).fill(null).map(function (i) {
     daysLastContacted: daysLastContacted
   });
 });
-var playground = document.getElementById("playground");
-var layer1 = document.getElementById("layer1");
-var background = document.getElementById("background");
 
-function main() {
-  layer1.innerHTML = "\n    <svg class=\"customers\" viewBox=\"0 0 360 90\" width=\"1080\" height=\"450\" preserveAspectRatio=\"xMidYMid meet\">\n      <g>".concat(randomCustomers.map(function (i) {
-    return i.render();
-  }).join(""), "</g>\n      \n      <g class=\"axis\" transform=\"translate(0,90)\">\n        <path class=\"domain\" d=\"M30,0.5V0H1080V0.5\"></path>\n      </g>\n\n      <g class=\"axis\" transform=\"translate(30,0)\">\n        <path class=\"domain\" d=\"M-0.5,30H0V90H-0.5\">\n        </path>\n      </g>\n    </svg>");
+function renderCircles() {
+  randomCustomers.forEach(function (customer, idx) {
+    circles.appendChild(customer.render(idx));
+  });
 }
 
-main();
+function init() {
+  renderCircles();
+  circles.addEventListener("click", function (e) {
+    var customer = e.target.dataset.customer;
+  });
+}
+
+init();
+setInterval(function () {
+  randomCustomers.forEach(function (i) {
+    return i.tick();
+  });
+}, 1000 / 60);
 },{"lodash":"node_modules/lodash/lodash.js","./Customer":"Customer.js"}],"../../../../../usr/local/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
