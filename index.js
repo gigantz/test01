@@ -7,6 +7,7 @@ const circles = document.getElementById("circles");
 const bonus = document.getElementById("bonus");
 const score = document.getElementById("score");
 const done = document.getElementById("done");
+const topScores = document.getElementById("top-scores");
 
 const restartBtn = document.getElementById("restart-btn");
 restartBtn.onclick = restart;
@@ -60,6 +61,10 @@ function start() {
 
       done.classList.add("active");
       done.querySelector("#last-score").innerHTML = SCORE;
+
+      fetch(`/save/${SCORE}`, {
+        method: "POST"
+      });
     } else {
       SCORE += Math.floor(
         randomCustomers.reduce((acc, crr) => (acc += crr.health), 0)
@@ -87,6 +92,15 @@ function restart() {
 }
 
 function init() {
+  fetch(`/list`)
+    .then(resp => resp.json())
+    .then(data => {
+      topScores.innerHTML = data
+        .slice(0, 5)
+        .map(i => `<li>${i}</li>`)
+        .join("");
+    });
+
   randomCustomers = Array(CUSTOMERS)
     .fill(null)
     .map(i => {

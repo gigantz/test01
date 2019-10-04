@@ -19418,6 +19418,7 @@ var circles = document.getElementById("circles");
 var bonus = document.getElementById("bonus");
 var score = document.getElementById("score");
 var done = document.getElementById("done");
+var topScores = document.getElementById("top-scores");
 var restartBtn = document.getElementById("restart-btn");
 restartBtn.onclick = restart;
 var blockedHealth = false,
@@ -19475,6 +19476,9 @@ function start() {
       circles.removeEventListener("click", circleHandler);
       done.classList.add("active");
       done.querySelector("#last-score").innerHTML = SCORE;
+      fetch("/save/".concat(SCORE), {
+        method: "POST"
+      });
     } else {
       SCORE += Math.floor(randomCustomers.reduce(function (acc, crr) {
         return acc += crr.health;
@@ -19501,6 +19505,13 @@ function restart() {
 }
 
 function init() {
+  fetch("/list").then(function (resp) {
+    return resp.json();
+  }).then(function (data) {
+    topScores.innerHTML = data.slice(0, 5).map(function (i) {
+      return "<li>".concat(i, "</li>");
+    }).join("");
+  });
   randomCustomers = Array(CUSTOMERS).fill(null).map(function (i) {
     var paying = _lodash.default.random(5, 20);
 

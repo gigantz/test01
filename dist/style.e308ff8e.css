@@ -23,12 +23,22 @@ h3 {
 
 #top-block {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  margin-top: 120px;
+  justify-content: space-between;
+  align-items: flex-start;
   user-select: none;
-  padding: 32px 0;
+  padding: 32px 0 0 0;
+  max-width: 1080px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+#top-list ol li {
+  padding-bottom: 2px;
+}
+
+#top-list ol li:first-child {
+  color: purple;
+  font-weight: bold;
 }
 
 #game {
