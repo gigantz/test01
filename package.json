@@ -6,7 +6,7 @@
   },
   "scripts": {
     "start": "node server.js",
-    "build": "NODE_ENV=production npx parcel index.html",
+    "build": "NODE_ENV=production npx parcel build index.html",
     "dev": "npx parcel index.html"
   },
   "name": "planhat-exercise",
