@@ -29,6 +29,7 @@ h3 {
   padding: 32px 0 0 0;
   max-width: 1080px;
   width: 100%;
+  min-height: 164px;
   margin: 0 auto;
 }
 
