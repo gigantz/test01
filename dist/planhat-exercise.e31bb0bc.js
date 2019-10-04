@@ -19505,13 +19505,7 @@ function restart() {
 }
 
 function init() {
-  fetch("/list").then(function (resp) {
-    return resp.json();
-  }).then(function (data) {
-    topScores.innerHTML = data.slice(0, 5).map(function (i) {
-      return "<li>".concat(i, "</li>");
-    }).join("");
-  });
+  getScores();
   randomCustomers = Array(CUSTOMERS).fill(null).map(function (i) {
     var paying = _lodash.default.random(5, 20);
 
@@ -19535,6 +19529,17 @@ function init() {
   start();
 }
 
+function getScores() {
+  return fetch("/list").then(function (resp) {
+    return resp.json();
+  }).then(function (data) {
+    topScores.innerHTML = data.slice(0, 5).map(function (i) {
+      return "<li>".concat(i, "</li>");
+    }).join("");
+  });
+}
+
+getScores();
 init();
 },{"lodash":"node_modules/lodash/lodash.js","./Customer":"Customer.js"}],"../../../../../usr/local/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];

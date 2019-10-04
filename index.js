@@ -92,15 +92,7 @@ function restart() {
 }
 
 function init() {
-  fetch(`/list`)
-    .then(resp => resp.json())
-    .then(data => {
-      topScores.innerHTML = data
-        .slice(0, 5)
-        .map(i => `<li>${i}</li>`)
-        .join("");
-    });
-
+  getScores();
   randomCustomers = Array(CUSTOMERS)
     .fill(null)
     .map(i => {
@@ -124,4 +116,16 @@ function init() {
   start();
 }
 
+function getScores() {
+  return fetch(`/list`)
+    .then(resp => resp.json())
+    .then(data => {
+      topScores.innerHTML = data
+        .slice(0, 5)
+        .map(i => `<li>${i}</li>`)
+        .join("");
+    });
+}
+
+getScores();
 init();
