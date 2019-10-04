@@ -85,7 +85,6 @@ Instead of having a linear scale on the x-axis. Make it logarithmic so that the 
 F) Put the game online and keep a top list (deliver 6)
 Deploy your project so that it can be played online use your own VPS, GitHub pages, S3 or something else.. up to you. Keep a top list of high scores (best 5 scores ever) and show in the app, instead of persisting to some self hosted database, save the top list using some onlie storage solution, for example Firebase which has a free plan.
 
-
 G) Advanced / Bonus (delivery 7)
 The ability to "alt + click" every x seconds to improve health of the customer by a few points was a massive over simplification.
 

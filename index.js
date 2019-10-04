@@ -7,7 +7,9 @@ const circles = document.getElementById("circles");
 const bonus = document.getElementById("bonus");
 const score = document.getElementById("score");
 const done = document.getElementById("done");
+
 const restartBtn = document.getElementById("restart-btn");
+restartBtn.onclick = restart;
 
 let blockedHealth = false,
   HEALTH_TIME = 2000, // 2 sec to next add health
@@ -18,6 +20,11 @@ let blockedHealth = false,
   RENDER_TICK,
   TICK_TIMER,
   bonusUsed = false; // bonus activated
+
+bonus.querySelector("button").addEventListener("click", () => {
+  randomCustomers.forEach(customer => customer.addHealth());
+  bonus.remove();
+});
 
 function circleHandler(e) {
   const { customer } = e.target.dataset;
@@ -79,8 +86,6 @@ function restart() {
   init();
 }
 
-restartBtn.onclick = restart;
-
 function init() {
   randomCustomers = Array(CUSTOMERS)
     .fill(null)
@@ -106,8 +111,3 @@ function init() {
 }
 
 init();
-
-bonus.querySelector("button").addEventListener("click", () => {
-  randomCustomers.forEach(customer => customer.addHealth());
-  bonus.remove();
-});

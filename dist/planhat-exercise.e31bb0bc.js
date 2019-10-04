@@ -19419,6 +19419,7 @@ var bonus = document.getElementById("bonus");
 var score = document.getElementById("score");
 var done = document.getElementById("done");
 var restartBtn = document.getElementById("restart-btn");
+restartBtn.onclick = restart;
 var blockedHealth = false,
     HEALTH_TIME = 2000,
     // 2 sec to next add health
@@ -19430,6 +19431,13 @@ randomCustomers,
     RENDER_TICK,
     TICK_TIMER,
     bonusUsed = false; // bonus activated
+
+bonus.querySelector("button").addEventListener("click", function () {
+  randomCustomers.forEach(function (customer) {
+    return customer.addHealth();
+  });
+  bonus.remove();
+});
 
 function circleHandler(e) {
   var customer = e.target.dataset.customer;
@@ -19492,8 +19500,6 @@ function restart() {
   init();
 }
 
-restartBtn.onclick = restart;
-
 function init() {
   randomCustomers = Array(CUSTOMERS).fill(null).map(function (i) {
     var paying = _lodash.default.random(5, 20);
@@ -19519,12 +19525,6 @@ function init() {
 }
 
 init();
-bonus.querySelector("button").addEventListener("click", function () {
-  randomCustomers.forEach(function (customer) {
-    return customer.addHealth();
-  });
-  bonus.remove();
-});
 },{"lodash":"node_modules/lodash/lodash.js","./Customer":"Customer.js"}],"../../../../../usr/local/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
