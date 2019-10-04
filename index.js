@@ -42,7 +42,7 @@ function circleHandler(e) {
   }
 }
 
-function start() {
+function startTickers() {
   RENDER_TICK = setInterval(() => {
     randomCustomers.forEach(i => i.tick());
   }, 1000 / 60);
@@ -93,6 +93,7 @@ function restart() {
 
 function init() {
   getScores();
+
   randomCustomers = Array(CUSTOMERS)
     .fill(null)
     .map(i => {
@@ -111,9 +112,9 @@ function init() {
   randomCustomers.forEach((customer, idx) => {
     circles.appendChild(customer.render(idx));
   });
-
   circles.addEventListener("click", circleHandler);
-  start();
+
+  startTickers();
 }
 
 function getScores() {
@@ -127,5 +128,4 @@ function getScores() {
     });
 }
 
-getScores();
 init();

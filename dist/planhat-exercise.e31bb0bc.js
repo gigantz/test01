@@ -19457,7 +19457,7 @@ function circleHandler(e) {
   }
 }
 
-function start() {
+function startTickers() {
   RENDER_TICK = setInterval(function () {
     randomCustomers.forEach(function (i) {
       return i.tick();
@@ -19527,7 +19527,7 @@ function init() {
     circles.appendChild(customer.render(idx));
   });
   circles.addEventListener("click", circleHandler);
-  start();
+  startTickers();
 }
 
 function getScores() {
@@ -19540,7 +19540,6 @@ function getScores() {
   });
 }
 
-getScores();
 init();
 },{"lodash":"node_modules/lodash/lodash.js","./Customer":"Customer.js"}],"../../../../../usr/local/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
