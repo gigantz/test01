@@ -1,11 +1,8 @@
 const express = require("express");
 const app = express();
-var bodyParser = require("body-parser");
 const fs = require("fs");
 
 const PORT = process.env.PORT || 3000;
-
-app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(express.static("dist"));
 app.get("/", (req, res) => {
@@ -26,7 +23,7 @@ app.post("/save/:score", (req, res) => {
       JSON.stringify([...new Set([...customers, parseInt(score, 10)])]),
       "utf8",
       () => {
-        console.log("done");
+        console.log("saved");
       }
     );
   });
