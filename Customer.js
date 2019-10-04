@@ -1,6 +1,7 @@
 import _ from "lodash";
 
 const SIZE = 3,
+  SPEED = 100,
   RENEWAL_DAYS = 360,
   SINCE_CONTACTED = 90;
 
@@ -23,15 +24,48 @@ class Customer {
     this.element = null;
   }
 
+  resetLastContacted() {
+    this.daysLastContacted = 0;
+    this.element.style.transform = `translate(${this.daysToRenewal *
+      SIZE *
+      10}px, ${this.daysLastContacted * SIZE * 10}px)`;
+  }
+
+  removeCustomer() {
+    if (this.element) this.element.remove();
+  }
+
+  addHealth() {
+    this.health += 3;
+    this.element.setAttributeNS(null, "class", "healthed");
+    setTimeout(() => {
+      this.element.classList.remove("healthed");
+    }, 1000);
+  }
+
   tick() {
+    if (this.daysToRenewal >= RENEWAL_DAYS / 10 && this.health < 3.5) {
+      this.removeCustomer();
+      return;
+    }
+
     if (this.daysToRenewal >= RENEWAL_DAYS / 10) {
       this.daysToRenewal = 0;
     } else if (this.daysLastContacted >= SINCE_CONTACTED / 10) {
       this.daysLastContacted = 0;
+      this.removeCustomer();
     } else {
-      this.daysToRenewal += 0.01;
-      this.daysLastContacted += 0.0075;
+      this.daysToRenewal += 1 / SPEED;
+      const yPos = (1 / SPEED) * (SINCE_CONTACTED / RENEWAL_DAYS) * SIZE;
+      this.daysLastContacted += Math.log(Math.pow(1 + 1 / yPos, yPos)) / 3;
     }
+
+    if (this.health < 10 && this.health >= 3.5) {
+      this.health += _.random(0.01, -0.05);
+    }
+
+    this.element.style.fill = setColor(this.health, 0.8);
+    this.element.style.stroke = setColor(this.health);
 
     this.element.style.transform = `translate(${this.daysToRenewal *
       SIZE *

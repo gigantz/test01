@@ -19292,6 +19292,7 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 var SIZE = 3,
+    SPEED = 100,
     RENEWAL_DAYS = 360,
     SINCE_CONTACTED = 90;
 
@@ -19326,17 +19327,52 @@ function () {
   }
 
   _createClass(Customer, [{
+    key: "resetLastContacted",
+    value: function resetLastContacted() {
+      this.daysLastContacted = 0;
+      this.element.style.transform = "translate(".concat(this.daysToRenewal * SIZE * 10, "px, ").concat(this.daysLastContacted * SIZE * 10, "px)");
+    }
+  }, {
+    key: "removeCustomer",
+    value: function removeCustomer() {
+      if (this.element) this.element.remove();
+    }
+  }, {
+    key: "addHealth",
+    value: function addHealth() {
+      var _this = this;
+
+      this.health += 3;
+      this.element.setAttributeNS(null, "class", "healthed");
+      setTimeout(function () {
+        _this.element.classList.remove("healthed");
+      }, 1000);
+    }
+  }, {
     key: "tick",
     value: function tick() {
+      if (this.daysToRenewal >= RENEWAL_DAYS / 10 && this.health < 3.5) {
+        this.removeCustomer();
+        return;
+      }
+
       if (this.daysToRenewal >= RENEWAL_DAYS / 10) {
         this.daysToRenewal = 0;
       } else if (this.daysLastContacted >= SINCE_CONTACTED / 10) {
         this.daysLastContacted = 0;
+        this.removeCustomer();
       } else {
-        this.daysToRenewal += 0.01;
-        this.daysLastContacted += 0.0075;
+        this.daysToRenewal += 1 / SPEED;
+        var yPos = 1 / SPEED * (SINCE_CONTACTED / RENEWAL_DAYS) * SIZE;
+        this.daysLastContacted += Math.log(Math.pow(1 + 1 / yPos, yPos)) / 3;
       }
 
+      if (this.health < 10 && this.health >= 3.5) {
+        this.health += _lodash.default.random(0.01, -0.05);
+      }
+
+      this.element.style.fill = setColor(this.health, 0.8);
+      this.element.style.stroke = setColor(this.health);
       this.element.style.transform = "translate(".concat(this.daysToRenewal * SIZE * 10, "px, ").concat(this.daysLastContacted * SIZE * 10, "px)");
     }
   }, {
@@ -19377,44 +19413,118 @@ var _Customer = _interopRequireDefault(require("./Customer"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var ticks = document.getElementById("ticks");
 var circles = document.getElementById("circles");
-var customers = document.getElementById("customers");
-var randomCustomers = Array(10).fill(null).map(function (i) {
-  var paying = _lodash.default.random(5, 20);
+var bonus = document.getElementById("bonus");
+var score = document.getElementById("score");
+var done = document.getElementById("done");
+var restartBtn = document.getElementById("restart-btn");
+var blockedHealth = false,
+    HEALTH_TIME = 2000,
+    // 2 sec to next add health
+CUSTOMERS = 10,
+    // number of random customers
+randomCustomers,
+    MAX_TICKS = 720,
+    SCORE = 0,
+    RENDER_TICK,
+    TICK_TIMER,
+    bonusUsed = false; // bonus activated
 
-  var health = _lodash.default.floor(_lodash.default.random(0, 10, true), 2);
+function circleHandler(e) {
+  var customer = e.target.dataset.customer;
 
-  var daysToRenewal = _lodash.default.random(0, 36);
+  if (e.altKey) {
+    if (!blockedHealth) {
+      randomCustomers[customer].addHealth();
+      blockedHealth = true;
+      setTimeout(function () {
+        blockedHealth = false;
+      }, HEALTH_TIME);
+    }
+  } else {
+    randomCustomers[customer].resetLastContacted();
+  }
+}
 
-  var daysLastContacted = _lodash.default.random(0, 9);
+function start() {
+  RENDER_TICK = setInterval(function () {
+    randomCustomers.forEach(function (i) {
+      return i.tick();
+    });
+  }, 1000 / 60);
+  TICK_TIMER = setInterval(function () {
+    MAX_TICKS -= 1;
+    ticks.innerHTML = Math.floor(MAX_TICKS);
 
-  return new _Customer.default({
-    paying: paying,
-    health: health,
-    daysToRenewal: daysToRenewal,
-    daysLastContacted: daysLastContacted
+    if (SCORE !== 0 && SCORE > 4000 && !bonusUsed) {
+      bonus.classList.add("opened");
+    }
+
+    if (MAX_TICKS <= 0 || circles.children.length === 0) {
+      clearInterval(RENDER_TICK);
+      clearInterval(TICK_TIMER);
+      circles.removeEventListener("click", circleHandler);
+      done.classList.add("active");
+      done.querySelector("#last-score").innerHTML = SCORE;
+    } else {
+      SCORE += Math.floor(randomCustomers.reduce(function (acc, crr) {
+        return acc += crr.health;
+      }, 0));
+      score.innerHTML = SCORE;
+    }
+  }, 1000 / 6);
+}
+
+function restart() {
+  done.classList.remove("active");
+  MAX_TICKS = 720;
+  SCORE = 0;
+  if (randomCustomers.length > 0) randomCustomers.forEach(function (i) {
+    return i.removeCustomer();
   });
-});
+  bonusUsed = false;
 
-function renderCircles() {
+  if (bonus) {
+    bonus.remove();
+  }
+
+  init();
+}
+
+restartBtn.onclick = restart;
+
+function init() {
+  randomCustomers = Array(CUSTOMERS).fill(null).map(function (i) {
+    var paying = _lodash.default.random(5, 20);
+
+    var health = _lodash.default.floor(_lodash.default.random(0, 10, true), 2);
+
+    var daysToRenewal = _lodash.default.random(0, 36);
+
+    var daysLastContacted = _lodash.default.random(0, 9);
+
+    return new _Customer.default({
+      paying: paying,
+      health: health,
+      daysToRenewal: daysToRenewal,
+      daysLastContacted: daysLastContacted
+    });
+  });
   randomCustomers.forEach(function (customer, idx) {
     circles.appendChild(customer.render(idx));
   });
-}
-
-function init() {
-  renderCircles();
-  circles.addEventListener("click", function (e) {
-    var customer = e.target.dataset.customer;
-  });
+  circles.addEventListener("click", circleHandler);
+  start();
 }
 
 init();
-setInterval(function () {
-  randomCustomers.forEach(function (i) {
-    return i.tick();
+bonus.querySelector("button").addEventListener("click", function () {
+  randomCustomers.forEach(function (customer) {
+    return customer.addHealth();
   });
-}, 1000 / 60);
+  bonus.remove();
+});
 },{"lodash":"node_modules/lodash/lodash.js","./Customer":"Customer.js"}],"../../../../../usr/local/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';

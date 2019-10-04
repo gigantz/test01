@@ -8,6 +8,11 @@
     <link rel="stylesheet" href="/style.e308ff8e.css">
   <script src="/style.e308ff8e.js"></script></head>
   <body>
+    <div id="top-block">
+      <h1>Flappy Customers 🙎‍♂️</h1>
+      <h2>Score: <span id="score">0</span>
+      <h3>Ticks: <span id="ticks">720</span></h3></h2>
+    </div>
     <div id="game">
       <div id="playground">
         <div id="layer1">
@@ -21,7 +26,22 @@
             <g id="circles"></g>
           </svg>
         </div>
-        <div id="background"></div>
+      </div>
+    </div>
+
+    <div id="bonus">
+      <button>+3 Health for everyone 🦄</button>
+    </div>
+
+    <div id="done">
+      <div>
+        <div class="icon">🎉</div>
+        <h3>
+          Your score is <span id="last-score">0</span>!
+        </h3>
+        <button id="restart-btn">
+          Try again
+        </button>
       </div>
     </div>
 
