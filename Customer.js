@@ -1,6 +1,7 @@
 import _ from "lodash";
 
 const SIZE = 3,
+  DIFF = 10,
   SPEED = 100,
   RENEWAL_DAYS = 360,
   SINCE_CONTACTED = 90;
@@ -44,14 +45,14 @@ class Customer {
   }
 
   tick() {
-    if (this.daysToRenewal >= RENEWAL_DAYS / 10 && this.health < 3.5) {
+    if (this.daysToRenewal >= RENEWAL_DAYS / DIFF && this.health < 3.5) {
       this.removeCustomer();
       return;
     }
 
-    if (this.daysToRenewal >= RENEWAL_DAYS / 10) {
+    if (this.daysToRenewal >= RENEWAL_DAYS / DIFF) {
       this.daysToRenewal = 0;
-    } else if (this.daysLastContacted >= SINCE_CONTACTED / 10) {
+    } else if (this.daysLastContacted >= SINCE_CONTACTED / DIFF) {
       this.daysLastContacted = 0;
       this.removeCustomer();
     } else {

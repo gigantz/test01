@@ -19292,6 +19292,7 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 var SIZE = 3,
+    DIFF = 10,
     SPEED = 100,
     RENEWAL_DAYS = 360,
     SINCE_CONTACTED = 90;
@@ -19351,14 +19352,14 @@ function () {
   }, {
     key: "tick",
     value: function tick() {
-      if (this.daysToRenewal >= RENEWAL_DAYS / 10 && this.health < 3.5) {
+      if (this.daysToRenewal >= RENEWAL_DAYS / DIFF && this.health < 3.5) {
         this.removeCustomer();
         return;
       }
 
-      if (this.daysToRenewal >= RENEWAL_DAYS / 10) {
+      if (this.daysToRenewal >= RENEWAL_DAYS / DIFF) {
         this.daysToRenewal = 0;
-      } else if (this.daysLastContacted >= SINCE_CONTACTED / 10) {
+      } else if (this.daysLastContacted >= SINCE_CONTACTED / DIFF) {
         this.daysLastContacted = 0;
         this.removeCustomer();
       } else {
